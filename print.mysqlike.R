@@ -1,44 +1,23 @@
-#-----------------------------------------------------------------------------------
-# print.mysqlike.R
-#
-# The MIT License
-#
-# Copyright (c) 2010 Takeshi Arabiki
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-#-----------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------#
+# Copyright (c) 2010 Takeshi Arabiki                                                  #
+# Licensed under the terms of the MIT License (see LICENSE.txt)                       #
+#-------------------------------------------------------------------------------------#
 
 
 
-#-----------------------------------------------------------------------------------
-# Description:
-#    output a vector, factor, matrix, list, or data.frame like MySQL
-#
-# Usage:
-#    print.mysqlike(texts, index, silent, header)
-#
-# Arguments:
-#    texts:      a vector, factor, matrix, list, or data.frame.
-#    index:      logical, whether to add row numbers.
-#    silent:     logical, whether to output the mysqlike class object.
-#    header:     logical, whether to add the table header.
-#-----------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------#
+# Description:                                                                        #
+#    output a vector, factor, matrix, list, or data.frame like MySQL                  #
+#                                                                                     #
+# Usage:                                                                              #
+#    print.mysqlike(texts, index, silent, header)                                     #
+#                                                                                     #
+# Arguments:                                                                          #
+#    texts:      a vector, factor, matrix, list, or data.frame.                       #
+#    index:      logical, whether to add row numbers.                                 #
+#    silent:     logical, whether to output the mysqlike class object.                #
+#    header:     logical, whether to add the table header.                            #
+#-------------------------------------------------------------------------------------#
 print.mysqlike <- function(texts, index = FALSE, silent = FALSE, header = TRUE) {
     sep <- " | "; leftside = "| "; rightside = " |"
     if (class(texts) != "mysqlike" || is.null(attr(texts, "formed"))) {
@@ -73,17 +52,17 @@ print.mysqlike <- function(texts, index = FALSE, silent = FALSE, header = TRUE) 
 
 
 
-#-----------------------------------------------------------------------------------
-# Description:
-#    convert a vector, factor, list, data.frame to a matrix
-#
-# Usage:
-#    convertMatrix(texts, index = FALSE)
-#
-# Arguments:
-#    texts:      a vector, factor, matrix, list, or data.frame.
-#    index:      logical, whether to add row numbers.
-#-----------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------#
+# Description:                                                                        #
+#    convert a vector, factor, list, data.frame to a matrix                           #
+#                                                                                     #
+# Usage:                                                                              #
+#    convertMatrix(texts, index = FALSE)                                              #
+#                                                                                     #
+# Arguments:                                                                          #
+#    texts:      a vector, factor, matrix, list, or data.frame.                       #
+#    index:      logical, whether to add row numbers.                                 #
+#-------------------------------------------------------------------------------------#
 convertMatrix <- function(texts, index = FALSE) {
     if (mode(texts) == "list") {
         len <- sapply(texts, length)
@@ -109,25 +88,28 @@ convertMatrix <- function(texts, index = FALSE) {
 
 
 
-#-----------------------------------------------------------------------------------
-# Description:
-#    concatenate R objects as characters
-#
-# Usage:
-#    concat(..., width = NULL, sep = "", side = sep, leftside, rightside, left)
-#
-# Arguments:
-#    ...:        R objects. each object is converted to a character.
-#    width:      a numeric vector to specify widths of each element
-#    sep:        a character string to separate the terms.
-#    side:       a character add to either side. The value of sep is used by default.
-#                If leftside or rightside are specified, this value is ignored.
-#    leftside:   a character add to left side. The value of side is used by default.
-#    rightside:  a character add to right side. The value of leftside is used by default.
-#    left:       a logical vector, whether to left-align.
-#                The elements regarded as numeric are right-aligned
-#                and the others are left-aligned by default.
-#-----------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------#
+# Description:                                                                        #
+#    concatenate R objects as characters                                              #
+#                                                                                     #
+# Usage:                                                                              #
+#    concat(..., width = NULL, sep = "", side = sep, leftside, rightside, left)       #
+#                                                                                     #
+# Arguments:                                                                          #
+#    ...:        R objects. each object is converted to a character.                  #
+#    width:      a numeric vector to specify widths of each element                   #
+#    sep:        a character string to separate the terms.                            #
+#    side:       a character string appended to either side.                          #
+#                'sep' is used by default.                                            #
+#                This value is ignored if 'leftside' or 'rightside' are specified.    #
+#    leftside:   a character string appended to the left side.                        #
+#                'side' is used by default.                                           #
+#    rightside:  a character string added to the right side.                          #
+#                'leftside' is used by default.                                       #
+#    left:       a logical vector, whether to left-align.                             #
+#                The elements regarded as numeric are right-aligned                   #
+#                and the others are left-aligned by default.                          #
+#-------------------------------------------------------------------------------------#
 concat <- function(..., width = NULL, sep = "", side = sep, leftside, rightside, left) {
     strs <- unlist(list(...))
     if (missing(leftside)) {
@@ -147,23 +129,23 @@ concat <- function(..., width = NULL, sep = "", side = sep, leftside, rightside,
 
 
 
-#-----------------------------------------------------------------------------------
-# Description:
-#    fill spaces to unify the lengths of characters
-#
-# Usage:
-#    pad(strs, width, left = TRUE)
-#
-# Arguments:
-#    strs:       a character vector.
-#    width:      a vector to specify widths of each element.
-#    left:       a logical vector, whether to left-align.
-#-----------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------#
+# Description:                                                                        #
+#    fill spaces to unify the lengths of characters                                   #
+#                                                                                     #
+# Usage:                                                                              #
+#    pad(strs, width, left = TRUE)                                                    #
+#                                                                                     #
+# Arguments:                                                                          #
+#    strs:       a character vector.                                                  #
+#    width:      a vector to specify widths of each element.                          #
+#    left:       a logical vector, whether to left-align.                             #
+#-------------------------------------------------------------------------------------#
 pad <- function(strs, width, left = TRUE) {    
     left <- rep(left, len = length(strs))
     ifelse(left,
-           # insert spaces into right side
+           # append spaces to the right side
            paste(strs, sprintf("%*s", width - nchar(strs, type = "width"), ""), sep = ""),
-           # insert spaces into left side
+           # append spaces to the left side
            paste(sprintf("%*s", width - nchar(strs, type = "width"), ""), strs, sep = ""))
 }
