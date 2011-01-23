@@ -37,7 +37,7 @@ repmat <- function(A, m, n = m) {
     if (length(d) <= 2) {
         if (length(m) == 2) {
             # about the same as array(A, m) even if length(A) == 1
-            # firstest!
+            # fastest!
             tmpA <- matrix(t(A), nrow = nr * m[1], ncol = nc, byrow = TRUE)
             matrix(tmpA, nrow = nr * m[1], ncol = nc * m[2])
             # slower if number of rows is large?
