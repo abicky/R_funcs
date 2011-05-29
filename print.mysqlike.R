@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------------#
-# Copyright (c) 2010 Takeshi Arabiki                                                  #
+# Copyright (c) 2010-2011 Takeshi Arabiki                                             #
 # Licensed under the terms of the MIT License (see LICENSE.txt)                       #
 #-------------------------------------------------------------------------------------#
 
@@ -66,7 +66,7 @@ print.mysqlike <- function(texts, index = FALSE, silent = FALSE, header = TRUE) 
 convertMatrix <- function(texts, index = FALSE) {
     if (mode(texts) == "list") {
         len <- sapply(texts, length)
-        # unify the vector lengths of each list element, and texts become a matrix
+        # justify the vector lengths of each list element, and texts become a matrix
         texts <- mapply(function(x, n) c(as.character(x), rep("", n)), texts, max(len) - len)
     } else if (is.vector(texts) || is.factor(texts)) {
         texts <- as.matrix(texts)
@@ -75,11 +75,11 @@ convertMatrix <- function(texts, index = FALSE) {
             stop(sprintf("Invalid argument: '%s'!", as.character(substitute(texts))))
         }
     }
-    # if texts doesn't have the column name, add the column index
+    # add the column index if texts doesn't have the column name
     if (is.null(colnames(texts))) {
         colnames(texts) <- 1:ncol(texts)
     }
-    # if index is TRUE, add the row number
+    # add the row number if index is TRUE
     if (index) {
         texts <- cbind(1:nrow(texts), texts)
     }
@@ -131,7 +131,7 @@ concat <- function(..., width = NULL, sep = "", side = sep, leftside, rightside,
 
 #-------------------------------------------------------------------------------------#
 # Description:                                                                        #
-#    fill spaces to unify the lengths of characters                                   #
+#    fill spaces to justify the lengths of characters                                 #
 #                                                                                     #
 # Usage:                                                                              #
 #    pad(strs, width, left = TRUE)                                                    #
@@ -141,7 +141,7 @@ concat <- function(..., width = NULL, sep = "", side = sep, leftside, rightside,
 #    width:      a vector to specify widths of each element.                          #
 #    left:       a logical vector, whether to left-align.                             #
 #-------------------------------------------------------------------------------------#
-pad <- function(strs, width, left = TRUE) {    
+pad <- function(strs, width, left = TRUE) {
     left <- rep(left, len = length(strs))
     ifelse(left,
            # append spaces to the right side
