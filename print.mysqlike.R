@@ -29,13 +29,17 @@ print.mysqlike <- function(texts, index = FALSE, silent = FALSE, header = TRUE,
     if (class(texts) != "mysqlike" || is.null(attr(texts, "formed"))) {
         texts <- convertMatrix(texts, index)
         # calculate max width for each column
-        width <- apply(rbind(colnames(texts), texts), 2, function(strs) max(nchar(strs, type = "width")))
+        if (header) {
+            width <- apply(rbind(colnames(texts), texts), 2, function(strs) max(nchar(strs, type = "width")))
+        } else {
+            width <- apply(texts, 2, function(strs) max(nchar(strs, type = "width")))
+        }
         border <- sapply(width + 2, function(n) paste(rep("-", n), collapse = ""))
         border <- paste("+", paste(border, collapse = "+"), "+", sep = "")
 
         records <- apply(texts, 1, concat, width = width, sep = sep, leftside = leftside, rightside = rightside)
         
-        if (header) {            
+        if (header) {
             header <- concat(colnames(texts), width = width, sep = sep, leftside = leftside, rightside = rightside)
             header <- paste(border, header, sep = "\n")
             out <- paste(header, border, paste(records, collapse = "\n"), border, "", sep = "\n")
