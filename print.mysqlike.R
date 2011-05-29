@@ -76,6 +76,10 @@ print.mysqlike <- function(texts, index = FALSE, silent = FALSE, header = TRUE,
 convertMatrix <- function(texts, index = FALSE) {
     if (mode(texts) == "list") {
         len <- sapply(texts, length)
+        numIndex <- which(sapply(texts, is.numeric))
+        # determine the number of significant digits on on each column
+        texts[numIndex] <- sapply(texts[numIndex], num2printformat)
+
         # justify the vector lengths of each list element, and texts become a matrix
         texts <- mapply(function(x, n) c(as.character(x), rep("", n)), texts, max(len) - len)
         if (class(texts) == "character") {
@@ -88,6 +92,12 @@ convertMatrix <- function(texts, index = FALSE) {
             stop(sprintf("Invalid argument: '%s'!", as.character(substitute(texts))))
         }
     }
+
+    if (is.numeric(texts)) {
+        # determine the number of significant digits on each column
+        texts <- apply(texts, 2, num2printformat)
+    }
+
     # add the column index if texts doesn't have the column name
     if (is.null(colnames(texts))) {
         colnames(texts) <- 1:ncol(texts)
@@ -161,4 +171,113 @@ pad <- function(strs, width, left = TRUE) {
            paste(strs, sprintf("%*s", width - nchar(strs, type = "width"), ""), sep = ""),
            # append spaces to the left side
            paste(sprintf("%*s", width - nchar(strs, type = "width"), ""), strs, sep = ""))
+}
+
+
+
+
+#-------------------------------------------------------------------------------------#
+# Description:                                                                        #
+#    make scientific notation                                                         #
+#                                                                                     #
+# Usage:                                                                              #
+#    as.SN(x, digits = 7)                                                              #
+#                                                                                     #
+# Arguments:                                                                          #
+#    x:          a numeric vector.                                                    #
+#    digits:     integer indicating the number of significant digits                  #
+#                                                                                     #
+# Example                                                                             #
+#    x <- c(10.54389051435, 0.000000003429, 5483205992345, 0.002, 10)                 #
+#    as.SN(x)                                                                         #
+#    "1.054389e+01" "3.429000e-09" "5.483206e+12" "2.000000e-03" "1.000000e+01"       #
+#                                                                                     #
+#    x <- c(10.5, 0.00000000342, 548, 0.002, 10)                                      #
+#    as.SN(x)                                                                         #
+#    "1.05e+01" "3.42e-09" "5.48e+02" "2.00e-03" "1.00e+01"                           #
+#-------------------------------------------------------------------------------------#
+as.SN <- function(x, digits = NULL) {
+    if (!is.numeric(x)) {
+        stop("x is not numeric!")
+    }
+
+    x <- signif(x, 7)
+    charX <- as.character(x)
+    if (is.null(digits)) {
+        # the number of significant digits
+        digits <- max(nchar(as.numeric(sub("^(\\d+)\\.?(\\d*).*", "\\1\\2", charX))))
+    } else {
+        if (digits < 1) {
+            digits <- 1
+        }
+    }
+
+    if (digits == 1) {
+        # e.g. 1e+01
+        charLen <- 5
+    } else {
+        # e.g. 1.0e+01 (digits = 2)
+        charLen <- digits + 5
+        # numeric like 1e+10 fail in the padding phase
+        charX <- sub("^(\\d)e", "\\1.0e", charX)
+    }
+
+    # make charX into scientific notation
+    nonSN <- which(!grepl("e", charX))
+    if (length(nonSN) != 0) {
+        splitNum <- strsplit(charX[nonSN], c("\\."))
+        eNum <- sapply(splitNum, function(x) {
+            if (x[1] == "0") {
+                -(nchar(sub("(0*).*", "\\1", x[2])) + 1)
+        } else {
+            nchar(x[1]) - 1
+        }
+        })
+        charX[nonSN] <- paste(sprintf("%.*f", max(charLen) - 6, x[nonSN] / 10^(eNum)), "e", sprintf("%+03d", eNum), sep = "")
+    }
+    
+    # justify the number of significant digits
+    padding <- sapply(max(charLen) - nchar(charX), function(times) paste(c(rep("0", times), "e"), collapse = ""))
+    charX <- mapply(function(x, pad) sub("e", pad, x), charX, padding)
+    names(charX) <- names(x)
+    
+    charX
+}
+
+
+
+#-------------------------------------------------------------------------------------#
+# Description:                                                                        #
+#    convert numeric vector to print format character vector print format             #
+#                                                                                     #
+# Usage:                                                                              #
+#    num2printformat(x)                                                               #
+#                                                                                     #
+# Arguments:                                                                          #
+#    x:          a numeric vector.                                                    #
+#-------------------------------------------------------------------------------------#
+num2printformat <- function(x) {
+    if (!is.numeric(x)) {
+        stop("x is not numeric!")
+    }
+
+    charX <- as.character(x)
+    
+    if (any(grepl("e", charX))) {
+        as.SN(x)
+    } else {
+        splitNum <- strsplit(charX, c("\\."))
+        charLen <- sapply(splitNum, function(x) {
+            if (length(x) == 1) {
+                c(nchar(x), 0)
+            } else {
+                nchar(x)
+            }
+        })
+        if (sum(apply(charLen, 1, max)) > 11) {
+            as.SN(x)
+        } else {
+            sprintf("%.*f", max(charLen[2,]), x)
+        }
+    }
 }
