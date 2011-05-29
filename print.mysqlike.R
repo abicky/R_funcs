@@ -10,16 +10,22 @@
 #    output a vector, factor, matrix, list, or data.frame like MySQL                  #
 #                                                                                     #
 # Usage:                                                                              #
-#    print.mysqlike(texts, index, silent, header)                                     #
+#    print.mysqlike(texts, index = FALSE, silent = FALSE, header = TRUE),             #
+#                   sep = " | ", leftside = "| ", rightside = " |")                   #
 #                                                                                     #
 # Arguments:                                                                          #
 #    texts:      a vector, factor, matrix, list, or data.frame.                       #
 #    index:      logical, whether to add row numbers.                                 #
 #    silent:     logical, whether to output the mysqlike class object.                #
 #    header:     logical, whether to add the table header.                            #
+#    sep:        a character string to separate the terms.                            #
+#    leftside:   a character string appended to the left side.                        #
+#                'side' is used by default.                                           #
+#    rightside:  a character string added to the right side.                          #
+#                'leftside' is used by default.                                       #
 #-------------------------------------------------------------------------------------#
-print.mysqlike <- function(texts, index = FALSE, silent = FALSE, header = TRUE) {
-    sep <- " | "; leftside = "| "; rightside = " |"
+print.mysqlike <- function(texts, index = FALSE, silent = FALSE, header = TRUE,
+                           sep = " | ", leftside = "| ", rightside = " |") {
     if (class(texts) != "mysqlike" || is.null(attr(texts, "formed"))) {
         texts <- convertMatrix(texts, index)
         # calculate max width for each column
