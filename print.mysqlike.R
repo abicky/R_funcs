@@ -78,6 +78,9 @@ convertMatrix <- function(texts, index = FALSE) {
         len <- sapply(texts, length)
         # justify the vector lengths of each list element, and texts become a matrix
         texts <- mapply(function(x, n) c(as.character(x), rep("", n)), texts, max(len) - len)
+        if (class(texts) == "character") {
+            texts <- matrix(texts, 1, dimnames = list(NULL, names(texts)))
+        }
     } else if (is.vector(texts) || is.factor(texts)) {
         texts <- as.matrix(texts)
     } else {
