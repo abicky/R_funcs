@@ -61,7 +61,7 @@ usage <- structure(function(func.name) {
         func.name <- as.character(match.call()[2])
         penv <- parent.frame()
         if (exists(func.name, envir = penv)) {
-            tmp.func.name <- eval(parse(text = func.name), parent.frame())
+            tmp.func.name <- eval(parse(text = func.name), penv)
             if (is.character(tmp.func.name)) {
                 func.name <- tmp.func.name
             }
