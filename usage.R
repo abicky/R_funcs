@@ -75,7 +75,7 @@ usage <- structure(function(func.name) {
 
     invisible(NULL)
 },
-                   class = c("function", "usage"),
+                   class = "usage",
                    usage.list = list())
 
 `$<-.usage` <- function(x, name, value) {
