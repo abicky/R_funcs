@@ -106,6 +106,7 @@ print.usage <- function(x) {
 
 Usage:
 
+     usage()
      usage(func.name)
      usage$func.name
      usage$func.name <- "usage of func.name"
