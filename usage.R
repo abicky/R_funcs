@@ -5,9 +5,10 @@
 
 #--------------------------------------------------------------------
 # Description:
-#    show usage
+#    show and set usage
 #
 # Usage:
+#    usage()
 #    usage(func.name)
 #    usage$func.name
 #    usage$func.name <- "usage of func.name"
@@ -16,6 +17,8 @@
 #    func.name:  function or function name character
 #
 # Examples:
+#    usage()  # show function names 'usage' has
+#    NULL
 #    usage(hoge)
 #    No usage about 'hoge'
 #    usage$hoge
@@ -27,9 +30,10 @@
 #    No usage about 'hoge'
 #
 #    usage$hoge <- '
-#    #-----------------------------
-#    # this is usage about "hoge"!
-#    #-----------------------------
+#    Description:
+#         Show message, "this is hoge!"
+#    Usage:
+#         hoge()
 #    '
 #    hoge <- function() {
 #        cat("this is hoge!\n")
@@ -37,26 +41,33 @@
 #
 #    usage(hoge)
 #
-#    #-----------------------------
-#    # this is usage on "hoge"!
-#    #-----------------------------
+#    Description:
+#         Show message, "this is hoge!"
+#    Usage:
+#         hoge()
 #
 #
 #    usage$hoge
 #
-#    #-----------------------------
-#    # this is usage on "hoge"!
-#    #-----------------------------
+#    Description:
+#         Show message, "this is hoge!"
+#    Usage:
+#         hoge()
 #
 #    NULL
+#
+#
+#    usage()
+#    [1] "hoge"
 #
 #--------------------------------------------------------------------
 usage <- structure(function(func.name) {
     usage.list <- attr(usage, "usage.list")
     if (missing(func.name)) {
-        print(names(usage.list))
+        # return function names 'usage' has
+        names(usage.list)
     } else {
-        # use func.name as-is if func.name) is a character object,
+        # use func.name as-is if func.name is a character object,
         # but is.character(func.name) will fail if func.name object does not exist
         func.name <- as.character(match.call()[2])
         penv <- parent.frame()
@@ -71,9 +82,8 @@ usage <- structure(function(func.name) {
         } else {
             cat(sprintf("No usage about '%s'\n", func.name))
         }
+        invisible(NULL)
     }
-
-    invisible(NULL)
 },
                    class = "usage",
                    usage.list = list())
@@ -87,4 +97,22 @@ usage <- structure(function(func.name) {
 
 `$.usage` <- function(x, name) {
     x(name)
+}
+
+print.usage <- function(x) {
+    cat('Description:
+
+     Show or Set Usage about the Specified Function
+
+Usage:
+
+     usage(func.name)
+     usage$func.name
+     usage$func.name <- "usage of func.name"
+
+Arguments:
+
+     func.name: function or function name character
+
+')
 }
