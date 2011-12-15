@@ -25,7 +25,7 @@
 #    rside:     a character string appended to the right side.
 #---------------------------------------------------------------------------
 print.mysqlike <- function(x, index = TRUE, header = TRUE, row.names = TRUE, digits = NULL,
-                           file = "", silent = FALSE, sep = " | ", lside = "| ", rside = " |") {
+                           file = "", silent = FALSE, border = TRUE, sep = " | ", lside = "| ", rside = " |") {
     if (class(x) != "mysqlike" || is.null(attr(x, "formed"))) {
         rnames <- NULL
         if (is.matrix(x) && row.names) {
@@ -51,18 +51,23 @@ print.mysqlike <- function(x, index = TRUE, header = TRUE, row.names = TRUE, dig
         } else {
             width <- apply(x, 2, function(strs) max(nchar(strs, type = "width")))
         }
-        border <- sapply(width + 2, function(n) paste(rep("-", n), collapse = ""))
-        border <- paste("+", paste(border, collapse = "+"), "+", sep = "")
+        border.line <- sapply(width + 2, function(n) paste(rep("-", n), collapse = ""))
+        border.line <- paste("+", paste(border.line, collapse = "+"), "+", sep = "")
 
         records <- apply(x, 1, concat,
                          width = width, sep = sep, lside = lside, rside = rside)
 
+        if (border) {
+            out <- paste(border.line, paste(records, collapse = "\n"), border.line, "", sep = "\n")
+        } else {
+            out <- paste(paste(records, collapse = "\n"), "", sep = "\n")
+        }
         if (header) {
             header <- concat(colnames(x), width = width, sep = sep, lside = lside, rside = rside)
-            header <- paste(border, header, sep = "\n")
-            out <- paste(header, border, paste(records, collapse = "\n"), border, "", sep = "\n")
-        } else {
-            out <- paste(border, paste(records, collapse = "\n"), border, "", sep = "\n")
+            if (border) {
+                header <- paste(border.line, header, sep = "\n")
+            }
+            out <- paste(header, out, sep = "\n")
         }
 
         class(out) <- "mysqlike"
