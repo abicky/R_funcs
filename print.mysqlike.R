@@ -10,7 +10,8 @@
 #
 # Usage:
 #    print.mysqlike(x, index = TRUE, header = TRUE, row.names = TRUE, digits = NULL,
-#                   silent = FALSE, sep = " | ", leftside = "| ", rside = " |")
+#                   file = "", silent = FALSE, border = TRUE,
+#                   sep = " | ", lside = "| ", rside = " |")
 #
 # Arguments:
 #    x:         a vector, factor, matrix, list, or data.frame.
@@ -20,12 +21,14 @@
 #    digits:    a numeric vector to specify the digits
 #    file:      A connection, or a character string naming the file to print to.
 #    silent:    logical, whether to output the mysqlike class object.
+#    border:    logical, whether to output the border.
 #    sep:       a character string to separate the columns.
 #    lside:     a character string appended to the left side.
 #    rside:     a character string appended to the right side.
 #---------------------------------------------------------------------------
 print.mysqlike <- function(x, index = TRUE, header = TRUE, row.names = TRUE, digits = NULL,
-                           file = "", silent = FALSE, border = TRUE, sep = " | ", lside = "| ", rside = " |") {
+                           file = "", silent = FALSE, border = TRUE,
+                           sep = " | ", lside = "| ", rside = " |") {
     if (class(x) != "mysqlike" || is.null(attr(x, "formed"))) {
         rnames <- NULL
         if (is.matrix(x) && row.names) {
@@ -89,7 +92,8 @@ print.mysqlike <- function(x, index = TRUE, header = TRUE, row.names = TRUE, dig
 #    concatenate R objects as characters
 #
 # Usage:
-#    concat(..., width = NULL, left, sep = "", side = "", lside, rside)
+#    concat(..., width = NULL, left, sep = "", side = "",
+#           lside = side, rside = side)
 #
 # Arguments:
 #    ...:   R objects. each object is converted to a character.
@@ -103,7 +107,7 @@ print.mysqlike <- function(x, index = TRUE, header = TRUE, row.names = TRUE, dig
 #    lside: a character string appended to the left side.
 #           "side" is used by default.
 #    rside: a character string added to the right side.
-#           "lside" is used by default.
+#           "side" is used by default.
 #---------------------------------------------------------------------------
 concat <- function(..., width = NULL, left, sep = "", side = "",
                    lside = side, rside = side) {
@@ -262,7 +266,7 @@ printMysqlikeFuncs <- list(
 #    convert a vector, factor, list, data.frame to a matrix
 #
 # Usage:
-#    printMysqlikeFuncs$convertMatrix(x, index = FALSE)
+#    printMysqlikeFuncs$convertMatrix(x, digits = NULL)
 #
 # Arguments:
 #    x:      a vector, factor, matrix, list, or data.frame.
