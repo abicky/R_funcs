@@ -1,5 +1,5 @@
 #--------------------------------------------------------------------
-# Copyright (c) 2011 Takeshi Arabiki
+# Copyright (c) 2011-2012 Takeshi Arabiki
 # Licensed under the terms of the MIT License (see LICENSE.txt)
 #--------------------------------------------------------------------
 
@@ -61,7 +61,7 @@
 #    [1] "hoge"
 #
 #--------------------------------------------------------------------
-usage <- structure(function(func.name) {
+usage <- structure(function(func.name, return.usage = FALSE) {
     usage.list <- attr(usage, "usage.list")
     if (missing(func.name)) {
         # return function names 'usage' has
@@ -71,18 +71,40 @@ usage <- structure(function(func.name) {
         # but is.character(func.name) will fail if func.name object does not exist
         func.name <- as.character(match.call()[2])
         penv <- parent.frame()
-        if (exists(func.name, envir = penv)) {
+        default.msg <- NULL
+        while (exists(func.name, envir = penv)) {
+            # for functions like `foo<-`
+            func.name <- sprintf("`%s`", func.name)
             tmp.func.name <- eval(parse(text = func.name), penv)
             if (is.character(tmp.func.name)) {
                 func.name <- tmp.func.name
+            } else if (is.function(tmp.func.name)) {
+                src <- as.list(body(tmp.func.name))
+                if (src[[1]] == "{" && length(src) > 2 && is.character(src[[2]])) {
+                    default.msg <- src[[2]]
+                }
+                break
+            } else {
+                stop("func.name must be a function or function name character!")
             }
         }
+
         if (func.name %in% names(usage.list)) {
-            cat(usage.list[[func.name]], fill = TRUE)
+            msg <- usage.list[[func.name]]
         } else {
-            cat(sprintf("No usage about '%s'\n", func.name))
+            if (is.null(default.msg)) {
+                msg <- sprintf("No usage about '%s'", func.name)
+            } else {
+                msg <- default.msg
+            }
         }
-        invisible(NULL)
+        if (return.usage) {
+            ret <- msg
+        } else {
+            cat(msg, fill = TRUE)
+            ret <- NULL
+        }
+        invisible(ret)
     }
 },
                    class = "usage",
@@ -107,13 +129,20 @@ print.usage <- function(x) {
 Usage:
 
      usage()
-     usage(func.name)
+     usage(func.name, return.usage = FALSE)
      usage$func.name
      usage$func.name <- "usage of func.name"
 
 Arguments:
 
      func.name: function or function name character
+
+  return.usage: logical, whether to return a usage as a characer value
+
+Details:
+
+     If the first line of a function is a character, the character is used
+     as default usage of the function like R5 method.
 
 ')
 }
