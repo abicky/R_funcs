@@ -8,7 +8,7 @@ rank <- function(x, na.last = TRUE,
                  decreasing = FALSE) {
     'Description:
 
-     exbase::rank
+     return the ranks of the values
 
 Usage:
 
