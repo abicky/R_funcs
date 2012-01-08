@@ -31,7 +31,7 @@ Examples:
 
      # sort in ascending order by Species
      # and sort in decreasing order by Sepal.Length
-     sort(iris, order.by = c(Species, -Sepal.Length)
+     sort(iris, order.by = c(Species, -Sepal.Length))
 
 '
     dec.index <- NULL

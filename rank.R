@@ -24,7 +24,7 @@ Arguments:
 
 ties.method: same as rank function (See also: base::rank)
 
-decreasing: logical, whether or not the sort should be decreasing
+decreasing: logical, whether or not the values should be ranked in the decreasing order
 
 '
     if (decreasing) {
