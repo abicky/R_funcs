@@ -88,7 +88,8 @@ usage <- structure(function(func.name, return.usage = FALSE) {
                 stop("func.name must be a function or function name character!")
             }
         }
-
+        # strip backquotes
+        func.name <- gsub("^`|`$", "", func.name)
         if (func.name %in% names(usage.list)) {
             msg <- usage.list[[func.name]]
         } else {
