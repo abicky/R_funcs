@@ -1,34 +1,49 @@
 #---------------------------------------------------------------------------
-# Copyright (c) 2010-2011 Takeshi Arabiki
+# URL https://github.com/abicky/R_funcs
+# Copyright (c) 2010-2012 Takeshi Arabiki
 # Licensed under the terms of the MIT License (see LICENSE.txt)
 #---------------------------------------------------------------------------
 
 
-#---------------------------------------------------------------------------
-# Description:
-#    output a vector, factor, matrix, list, or data.frame like MySQL
-#
-# Usage:
-#    print.mysqlike(x, index = TRUE, header = TRUE, row.names = TRUE, digits = NULL,
-#                   file = "", silent = FALSE, border = TRUE,
-#                   sep = " | ", lside = "| ", rside = " |")
-#
-# Arguments:
-#    x:         a vector, factor, matrix, list, or data.frame.
-#    index:     logical, whether to add row numbers.
-#    header:    logical, whether to add the table header.
-#    row.names: logical, whether to add row names
-#    digits:    a numeric vector to specify the digits
-#    file:      A connection, or a character string naming the file to print to.
-#    silent:    logical, whether to output the mysqlike class object.
-#    border:    logical, whether to output the border.
-#    sep:       a character string to separate the columns.
-#    lside:     a character string appended to the left side.
-#    rside:     a character string appended to the right side.
-#---------------------------------------------------------------------------
 print.mysqlike <- function(x, index = TRUE, header = TRUE, row.names = TRUE, digits = NULL,
                            file = "", silent = FALSE, border = TRUE,
                            sep = " | ", lside = "| ", rside = " |") {
+    'Description:
+
+     output a vector, factor, matrix, list, or data.frame like MySQL
+
+Usage:
+
+     print.mysqlike(x, index = TRUE, header = TRUE, row.names = TRUE, digits = NULL,
+                    file = "", silent = FALSE, border = TRUE,
+                    sep = " | ", lside = "| ", rside = " |")
+
+Arguments:
+
+       x: a vector, factor, matrix, list, or data.frame.
+
+   index: logical, whether to add row numbers.
+
+  header: logical, whether to add the table header.
+
+row.names: logical, whether to add row names
+
+  digits: a numeric vector to specify the digits
+
+    file: A connection, or a character string naming the file to print to.
+
+  silent: logical, whether to output the mysqlike class object.
+
+  border: logical, whether to output the border.
+
+     sep: a character string to separate the columns.
+
+   lside: a character string appended to the left side.
+
+   rside: a character string appended to the right side.
+
+'
+
     if (class(x) != "mysqlike" || is.null(attr(x, "formed"))) {
         rnames <- NULL
         if (is.matrix(x) && row.names) {
@@ -87,30 +102,38 @@ print.mysqlike <- function(x, index = TRUE, header = TRUE, row.names = TRUE, dig
 }
 
 
-#---------------------------------------------------------------------------
-# Description:
-#    concatenate R objects as characters
-#
-# Usage:
-#    concat(..., width = NULL, left, sep = "", side = "",
-#           lside = side, rside = side)
-#
-# Arguments:
-#    ...:   R objects. each object is converted to a character.
-#    width: a numeric vector to specify widths of each element
-#    left:  a logical vector, whether to left-align.
-#           The elements regarded as numeric are right-aligned
-#           and the others are left-aligned by default.
-#    sep:   a character string to separate the terms.
-#    side:  a character string appended to either side.
-#           This value is ignored if "lside" or "rside" are specified.
-#    lside: a character string appended to the left side.
-#           "side" is used by default.
-#    rside: a character string added to the right side.
-#           "side" is used by default.
-#---------------------------------------------------------------------------
 concat <- function(..., width = NULL, left, sep = "", side = "",
                    lside = side, rside = side) {
+    'Description:
+
+     concatenate R objects as characters
+
+Usage:
+     concat(..., width = NULL, left, sep = "", side = "",
+            lside = side, rside = side)
+
+Arguments:
+
+     ...: a R objects. each object is converted to a character.
+
+   width: a numeric vector to specify widths of each element
+
+    left: a logical vector, whether to left-align.
+          The elements regarded as numeric are right-aligned
+          and the others are left-aligned by default.
+
+     sep: a character string to separate the terms.
+
+    side: a character string appended to either side.
+          This value is ignored if "lside" or "rside" are specified.
+
+   lside: a character string appended to the left side.
+          "side" is used by default.
+
+   rside: a character string added to the right side.
+          "side" is used by default.
+
+'
     strs <- unlist(list(...))
     if (missing(left)) {
         left <- !is.numexp(strs)
@@ -122,21 +145,27 @@ concat <- function(..., width = NULL, left, sep = "", side = "",
 }
 
 
-#---------------------------------------------------------------------------
-# Description:
-#    fill spaces to justify the lengths of characters
-#
-# Usage:
-#    pad(strs, width = NULL, left = TRUE)
-#
-# Arguments:
-#    strs:  a character vector.
-#    width: a numeric vector to specify widths of each element.
-#           default is max(nchar(strs)).
-#           nchar(strs) is used if nchar(strs) > width
-#    left:  a logical vector, whether to left-align.
-#---------------------------------------------------------------------------
 pad <- function(strs, width = NULL, left = TRUE) {
+    'Description:
+
+     fill spaces to justify the lengths of characters
+
+Usage:
+
+     pad(strs, width = NULL, left = TRUE)
+
+Arguments:
+
+    strs: a character vector.
+
+   width: a numeric vector to specify widths of each element.
+          default is max(nchar(strs)).
+          nchar(strs) is used if nchar(strs) > width
+
+    left: a logical vector, whether to left-align.
+
+'
+
     if (mode(strs) %in% c("character", "numeric")) {
         strs <- as.character(strs)
     } else {
@@ -180,30 +209,36 @@ pad <- function(strs, width = NULL, left = TRUE) {
 }
 
 
-#---------------------------------------------------------------------------
-# Description:
-#    make scientific notation
-#
-# Usage:
-#    as.SN(x, digits = NULL)
-#
-# Arguments:
-#    x:      a numeric vector.
-#    digits: a numeric vector indicating the number of significant digits
-#
-# Example
-#    x <- c(10.54389051435, 0.000000003429, 5483205992345, 0.002, 10)
-#    as.SN(x)
-#    "1.054389e+01" "3.429000e-09" "5.483206e+12" "2.000000e-03" "1.000000e+01"
-#
-#    x <- c(10.5, 0.00000000342, 548, 0.002, 10)
-#    as.SN(x)
-#    "1.05e+01" "3.42e-09" "5.48e+02" "2.00e-03" "1.00e+01"
-#---------------------------------------------------------------------------
 as.SN <- function(x, digits = NULL) {
+    'Description:
+     make scientific notation
+
+Usage:
+
+     as.SN(x, digits = NULL)
+
+Arguments:
+
+       x: a numeric vector.
+
+  digits: a numeric vector indicating the number of significant digits
+
+Examples:
+
+     x <- c(10.54389051435, 0.000000003429, 5483205992345, 0.002, 10)
+     as.SN(x)
+     "1.054389e+01" "3.429000e-09" "5.483206e+12" "2.000000e-03" "1.000000e+01"
+
+     x <- c(10.5, 0.00000000342, 548, 0.002, 10)
+     as.SN(x)
+     "1.05e+01" "3.42e-09" "5.48e+02" "2.00e-03" "1.00e+01"
+
+'
+
     if (is.character(x) && all(printMysqlikeFuncs$is.numericchar(x))) {
         x <- as.numeric(x)
     }
+
     if (!is.numeric(x)) {
         stop("x is not numeric!")
     }
@@ -227,22 +262,26 @@ as.SN <- function(x, digits = NULL) {
 }
 
 
-#---------------------------------------------------------------------------
-# Description:
-#    detect numeric representations
-#
-# Usage:
-#    is.numexp(strs)
-#
-# Arguments:
-#    strs: a character vector
-#
-# Example
-#    strs <- c("1234", "1234a", "1,234", "1,2,34")
-#    is.numexp(strs)
-#    TRUE FALSE  TRUE FALSE
-#---------------------------------------------------------------------------
 is.numexp <- function(strs) {
+    'Description:
+     detect numeric representations
+
+Usage:
+
+     is.numexp(strs)
+
+Arguments:
+
+    strs: a character vector
+
+Examples:
+
+     strs <- c("1234", "1234a", "1,234", "1,2,34")
+     is.numexp(strs)
+     TRUE FALSE  TRUE FALSE
+
+'
+
     grepl("(?x)^\\s*[-+]?
            (?:
                # begin with number
@@ -261,18 +300,21 @@ is.numexp <- function(strs) {
 
 # other functions
 printMysqlikeFuncs <- list(
-#---------------------------------------------------------------------------
-# Description:
-#    convert a vector, factor, list, data.frame to a matrix
-#
-# Usage:
-#    printMysqlikeFuncs$convertMatrix(x, digits = NULL)
-#
-# Arguments:
-#    x:      a vector, factor, matrix, list, or data.frame.
-#    digits: a numeric vector indicating the number of significant digits
-#---------------------------------------------------------------------------
 convertMatrix = function(x, digits = NULL) {
+    'Description:
+     convert a vector, factor, list, data.frame to a matrix
+
+Usage:
+
+     printMysqlikeFuncs$convertMatrix(x, digits = NULL)
+
+Arguments:
+
+       x: a vector, factor, matrix, list, or data.frame.
+
+  digits: a numeric vector indicating the number of significant digits
+'
+
     if (mode(x) == "list") {
         len <- sapply(x, length)
         numIndex <- which(sapply(x, is.numeric))
@@ -323,11 +365,11 @@ is.numericchar = function(str) {
     }
 },
 
-
-# convert numeric vector to print format character vector print format
-# e.g. num2printformat(c(1, 1.2)) --> c("1.0", "1.2")
-#      num2printformat(c(100000, 0.0001)) --> c("1e+05", "1e-04")
 num2printformat = function(x, digits = NULL) {
+    'convert numeric vector to print format character vector print format
+e.g. num2printformat(c(1, 1.2)) --> c("1.0", "1.2")
+num2printformat(c(100000, 0.0001)) --> c("1e+05", "1e-04")'
+
     if (!is.numeric(x)) {
         stop("x is not numeric!")
     }
@@ -358,8 +400,8 @@ num2printformat = function(x, digits = NULL) {
     }
 },
 
-# check 'arg' length and repeat it until its length is n
 checkArgLength = function(arg, n) {
+    'check "arg" length and repeat it until its length is n'
     n <- suppressWarnings(as.integer(n))
     if (is.na(n) || n <= 0) {
         stop("'n' is invalid!")
