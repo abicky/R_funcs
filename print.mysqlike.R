@@ -209,19 +209,21 @@ Arguments:
 }
 
 
-as.SN <- function(x, digits = NULL) {
+as.SN <- function(x, digits = NULL, round.digits = NULL) {
     'Description:
      make scientific notation
 
 Usage:
 
-     as.SN(x, digits = NULL)
+     as.SN(x, digits = NULL, round.digits = NULL)
 
 Arguments:
 
        x: a numeric vector.
 
   digits: a numeric vector indicating the number of significant digits
+
+round.digits: a numeric vector indicating the number of digits after decimal places
 
 Examples:
 
@@ -244,9 +246,22 @@ Examples:
     }
 
     if (is.null(digits)) {
+        if (!is.null(round.digits)) {
+            if (is.numeric(round.digits)) {
+                x <- round(x, round.digits)
+            } else {
+                stop("'round.digits' is must be numeric!")
+            }
+        }
+        # strip non-numeric characters
+        numbers <- gsub("^-?(?:0\\.0*|(\\d+)\\.(\\d*)(?:e.*)?)?", "\\1\\2", as.character(x))
         # the number of significant digits
         n <- 6
-        digits <- n - min(nchar(sub(".*?(0*)e.*", "\\1", sprintf("%.*e", n, x))))
+        digits <- min(n, max(nchar(numbers)) - 1)
+    } else if (!is.numeric(digits)) {
+        stop("'digits' is must be numeric!")
+    } else if (!is.null(round.digits)) {
+        warning("'round.digits' is ignored.")
     }
 
     # digits is 0 if the numeric vector consists of only single digit
@@ -331,23 +346,27 @@ Arguments:
         # justify the vector lengths of each list element, and x become a matrix
         rnames <- rownames(x)
         x <- mapply(function(x, n) c(as.character(x), rep("", n)), x, max(len) - len)
+        if (!is.matrix(x)) {
+            x <- t(as.matrix(x))
+        }
         rownames(x) <- rnames
     } else if (is.vector(x) || is.factor(x) || is.matrix(x)) {
         x <- as.matrix(x)
         # in case that original x is vector or matrix
         if (is.numeric(x)) {
-            rnames <- rownames(x)
+            dnames <- dimnames(x)
             # determine the number of significant digits on each column
             if (is.null(digits)) {
                 x <- apply(x, 2, printMysqlikeFuncs$num2printformat)
             } else {
                 digits <- printMysqlikeFuncs$checkArgLength(digits, ncol(x))
-                cnames <- colnames(x)
                 x <- mapply(printMysqlikeFuncs$num2printformat,
                             as.data.frame(x), digits, USE.NAMES = FALSE)
-                colnames(x) <- cnames
             }
-            rownames(x) <- rnames
+            if (!is.matrix(x)) {
+                x <- t(as.matrix(x))
+            }
+            dimnames(x) <- dnames
         }
     } else if (!is.matrix(x)) {
         stop("Invalid argument: 'x'!")
@@ -374,10 +393,12 @@ num2printformat(c(100000, 0.0001)) --> c("1e+05", "1e-04")'
         stop("x is not numeric!")
     }
 
+    if (!is.null(digits)) {
+        x <- round(x, digits)
+    }
     charX <- as.character(x)
-
     if (any(grepl("e", charX))) {
-        as.SN(x, digits)
+        ret <- as.SN(x, round.digits = digits)
     } else {
         splitNum <- strsplit(charX, c("\\."))
         charLen <- sapply(splitNum, function(x) {
@@ -389,15 +410,19 @@ num2printformat(c(100000, 0.0001)) --> c("1e+05", "1e-04")'
         })
         maxLen <- apply(charLen, 1, max)
         if (sum(maxLen) > 11) {
-            as.SN(x, digits)
+            if (!is.null(digits) && maxLen[1] > digits) {
+                digits <- 6
+            }
+            ret <- as.SN(x, digits)
         } else {
             if (is.null(digits)) {
-                sprintf("%.*f", maxLen[2], x)
+                ret <- sprintf("%.*f", maxLen[2], x)
             } else {
-                sprintf("%.*f", digits, x)
+                ret <- sprintf("%.*f", digits, x)
             }
         }
     }
+    ret
 },
 
 checkArgLength = function(arg, n) {
