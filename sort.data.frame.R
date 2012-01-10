@@ -42,8 +42,12 @@ Examples:
         name.list <- as.list(seq_along(x))
         names(name.list) <- names(x)
         field.index <- eval(substitute(order.by), name.list, parent.frame())
-        sort.fields <- names(name.list)[abs(field.index)]
-        dec.index <- which(field.index < 0)
+        if (is.numeric(field.index)) {
+            sort.fields <- names(name.list)[abs(field.index)]
+            dec.index <- which(field.index < 0)
+        } else {
+            sort.fields <- field.index
+        }
     }
     if (length(dec.index) > 0) {
         dec.fields <- sort.fields[dec.index]
