@@ -37,12 +37,16 @@ Example:
 
      colorPrint(iris)
 
-     colorPrint(iris, condition = Sepal.Length > 7, style = list(fg = "red"))
+     colorPrint(iris, condition = Sepal.Length > 7,
+                style = list(fg = "red"))
 
      colorPrint(iris, formats = list(
-                        list(condition = Species == "setosa", style = list(font.style = "bold")),
-                        list(condition = Species == "virginica", style = list(fg = "black", bg = "white")),
-                        list(condition = TRUE, style=list(font.style = "underline"))))
+                        list(condition = Species == "setosa",
+                             style     = list(font.style = "bold")),
+                        list(condition = Species == "virginica",
+                             style     = list(fg = "black", bg = "white")),
+                        list(condition = TRUE,
+                             style     = list(font.style = "underline"))))
 '
 
     if (!is.data.frame(df)) {
@@ -53,7 +57,7 @@ Example:
     mode <- match.arg(mode)
     orig.mode <- style.mode(mode)
     if (is.null(orig.mode$style.mode)) {
-        orig.mode$style.mode <- "off"
+        orig.mode$style.mode <- style.default.mode()
     }
     on.exit(style.mode(orig.mode))
     default.values <- list(targets = seq(length = NROW(df) / 2, by = 2),
@@ -120,9 +124,12 @@ readDataFrame <- function(df) {
     # argument name which means formats must be 'formats'
     formats.sub <- substitute(formats, env = parent.frame())
     tmp.formats <- NULL
+
+    format.names <- c("condition", "style", "fields")
     for (i in seq(length = length(formats.sub) - 1) + 1) {
+        s <- .select(names(formats.sub[[i]]), format.names)
         # cf. subset.data.frame
-        e <- formats.sub[[i]][["condition"]]
+        e <- formats.sub[[i]][[s["condition"]]]
         r <- eval(e, df, parent.frame(2))
         if (!is.logical(r) && !is.null(r)) {
             stop("'condition' must evaluate to logical")
@@ -135,11 +142,28 @@ readDataFrame <- function(df) {
             }
             target <- which(r & !is.na(r))
         }
-        style <- formats.sub[[i]][["style"]]
-        if (!is.null(formats.sub[[i]][["fields"]])) {
+        style <- formats.sub[[i]][[s["style"]]]
+        if (!is.null(formats.sub[[i]][[s["fields"]]])) {
             stop("'fields' is not supported yet")
         }
         tmp.formats <- c(tmp.formats, list(list(target = target, style = style)))
     }
     tmp.formats
+}
+
+# select longest match
+.select <- function(x, targets) {
+    matches <- pmatch(x, targets, dup = TRUE)
+    x <- x[!is.na(matches)]
+    select <- tapply(x, matches[!is.na(matches)], function(x) {
+        x[which.max(nchar(x))]
+    })
+    lacks <- setdiff(seq_along(targets), as.numeric(names(select)))
+    if (length(lacks) > 0) {
+        names(select) <- targets[-lacks]
+    } else {
+        names(select) <- targets
+    }
+    # convert array to character
+    c(select)
 }
